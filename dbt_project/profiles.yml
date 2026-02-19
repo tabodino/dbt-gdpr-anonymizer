@@ -1,0 +1,73 @@
+# ============================================
+# RGPD Anonymizer - dbt Profiles Configuration
+# ============================================
+# This file configures the database connections for the project
+
+rgpd_anonymizer:
+  
+  # Default target
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  
+  outputs:
+    
+    # ==========================================
+    # DEVELOPMENT Environment
+    # ==========================================
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', './rgpd_anonymizer.duckdb') }}"
+      
+      # DuckDB extensions to load
+      extensions:
+        - httpfs      # For loading files over HTTP/S3
+        - json        # JSON parsing support
+        - parquet     # Parquet file support
+      
+      # DuckDB settings
+      settings:
+        threads: 4
+        memory_limit: '4GB'
+        max_memory: '4GB'
+        enable_http_metadata_cache: true
+      
+      # Metadata
+      schema: dev
+      
+    # ==========================================
+    # STAGING Environment
+    # ==========================================
+    staging:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', './rgpd_anonymizer_staging.duckdb') }}"
+      
+      extensions:
+        - httpfs
+        - json
+        - parquet
+      
+      settings:
+        threads: 8
+        memory_limit: '8GB'
+        max_memory: '8GB'
+      
+      schema: staging
+    
+    # ==========================================
+    # PRODUCTION Environment
+    # ==========================================
+    prod:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', './rgpd_anonymizer_prod.duckdb') }}"
+      
+      extensions:
+        - httpfs
+        - json
+        - parquet
+      
+      settings:
+        threads: 16
+        memory_limit: '16GB'
+        max_memory: '16GB'
+        enable_progress_bar: false
+      
+      schema: prod
