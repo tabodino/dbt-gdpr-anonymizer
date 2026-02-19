@@ -1,0 +1,272 @@
+version: 2
+
+# ============================================
+# STAGING LAYER - Schema Documentation
+# ============================================
+
+models:
+  - name: stg_services_publics
+    description: |
+      French national public services — cleaned and typed data.
+      
+      **WARNING — SENSITIVE DATA**
+      
+      This model contains personal data (PII) under GDPR.
+      **Do NOT use for public exports or visualizations.**
+      
+      Use `int_services_anonymized` instead for any public-facing usage.
+      
+      Source: data.gouv.fr — National Public Services Directory
+      Update frequency: Monthly
+    
+    meta:
+      owner: "data_engineering"
+      contains_pii: true
+      last_reviewed: "2026-02-15"
+      documentation: "https://www.data.gouv.fr/fr/datasets/annuaire-des-services-publics-nationaux/"
+    
+    columns:
+      # ========================================
+      # IDENTIFIERS
+      # ========================================
+      - name: service_key
+        description: "Surrogate key generated using dbt_utils"
+        tests:
+          - unique
+          - not_null
+      
+      - name: service_id
+        description: "Unique identifier of the public service (source: data.gouv.fr)"
+        tests:
+          - unique
+          - not_null
+      
+      # ========================================
+      # GENERAL INFORMATION (NON-PII)
+      # ========================================
+      - name: service_name
+        description: "Official name of the public service"
+        tests:
+          - not_null
+        meta:
+          pii: false
+      
+      - name: parent_organization
+        description: "Parent organization (e.g., Ministry, Independent Authority)"
+        meta:
+          pii: false
+      
+      - name: organization_type
+        description: "Organization type (e.g., ministere, autorite-administrative-independante)"
+        tests:
+          - accepted_values:
+              values: 
+                - 'ministere'
+                - 'autorite-administrative-independante'
+                - 'etablissement-public'
+                - 'service-central'
+        meta:
+          pii: false
+      
+      - name: website
+        description: "Official website of the service"
+        meta:
+          pii: false
+      
+      # ========================================
+      # PERSONAL DATA (PII)
+      # ========================================
+      - name: contact_email
+        description: |
+          Contact email address of the service.
+          
+          **SENSITIVE DATA — DIRECT PII**
+          
+          Must be anonymized before any public release.
+        
+        meta:
+          pii: true
+          pii_type: "direct_identifier"
+          anonymization_method: "hash_sha256"
+          legal_basis: "GDPR Art. 6.1.e — Public interest mission"
+          retention_days: 730
+          data_owner: "DPO"
+          sensitivity: "high"
+          
+        tests:
+          - not_null:
+              where: "has_email = 1"
+      
+      - name: contact_phone
+        description: |
+          Contact phone number of the service.
+          
+          **SENSITIVE DATA — DIRECT PII**
+          
+          Must be partially masked before publication.
+        
+        meta:
+          pii: true
+          pii_type: "direct_identifier"
+          anonymization_method: "mask_partial"
+          legal_basis: "GDPR Art. 6.1.e"
+          retention_days: 730
+          data_owner: "DPO"
+          sensitivity: "high"
+      
+      - name: street_address
+        description: |
+          Full postal address of the service (street number, street name).
+          
+          **SENSITIVE DATA — INDIRECT PII**
+          
+          Must be aggregated at the city level for publication.
+        
+        meta:
+          pii: true
+          pii_type: "quasi_identifier"
+          anonymization_method: "aggregate_to_city"
+          legal_basis: "GDPR Art. 6.1.e"
+          retention_days: 730
+          data_owner: "DPO"
+          sensitivity: "medium"
+      
+      - name: latitude
+        description: |
+          GPS coordinate — Latitude (decimal format).
+          
+          **SENSITIVE DATA — INDIRECT PII**
+          
+          Must be rounded to 2 decimals (~1km precision).
+        
+        meta:
+          pii: true
+          pii_type: "quasi_identifier"
+          anonymization_method: "round_2_decimals"
+          legal_basis: "GDPR Art. 6.1.e"
+          retention_days: 730
+          data_owner: "DPO"
+          sensitivity: "medium"
+          k_anonymity_target: 5
+        
+        tests:
+          - not_null:
+              where: "has_coordinates = 1"
+          - dbt_utils.accepted_range:
+              min_value: -90
+              max_value: 90
+              where: "latitude is not null"
+      
+      - name: longitude
+        description: |
+          GPS coordinate — Longitude (decimal format).
+          
+          **SENSITIVE DATA — INDIRECT PII**
+          
+          Must be rounded to 2 decimals (~1km precision).
+        
+        meta:
+          pii: true
+          pii_type: "quasi_identifier"
+          anonymization_method: "round_2_decimals"
+          legal_basis: "GDPR Art. 6.1.e"
+          retention_days: 730
+          data_owner: "DPO"
+          sensitivity: "medium"
+          k_anonymity_target: 5
+        
+        tests:
+          - not_null:
+              where: "has_coordinates = 1"
+          - dbt_utils.accepted_range:
+              min_value: -180
+              max_value: 180
+              where: "longitude is not null"
+      
+      # ========================================
+      # GEOGRAPHICAL METADATA (NON-PII)
+      # ========================================
+      - name: postal_code
+        description: "Postal code"
+        meta:
+          pii: false
+      
+      - name: city
+        description: "City name"
+        meta:
+          pii: false
+      
+      - name: commune
+        description: "Official commune name"
+        meta:
+          pii: false
+      
+      - name: insee_code
+        description: "INSEE code of the commune"
+        meta:
+          pii: false
+      
+      # ========================================
+      # TIMESTAMPS
+      # ========================================
+      - name: last_updated
+        description: "Last update date in the source"
+        tests:
+          - not_null
+      
+      - name: loaded_at
+        description: "Load timestamp in dbt"
+        tests:
+          - not_null
+      
+      # ========================================
+      # QUALITY FLAGS
+      # ========================================
+      - name: has_email
+        description: "Flag: service has an email (1 = yes, 0 = no)"
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      
+      - name: has_phone
+        description: "Flag: service has a phone number (1 = yes, 0 = no)"
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      
+      - name: has_address
+        description: "Flag: service has a postal address (1 = yes, 0 = no)"
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      
+      - name: has_coordinates
+        description: "Flag: service has GPS coordinates (1 = yes, 0 = no)"
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+# ============================================
+# SEEDS (Raw Data)
+# ============================================
+
+seeds:
+  - name: services_publics_raw
+    description: |
+      Raw public services data downloaded from data.gouv.fr.
+      
+      **Source**: scripts/download_data.py  
+      **Format**: CSV  
+      **Frequency**: Manual / On-demand
+    
+    meta:
+      owner: "data_engineering"
+      contains_pii: true
+      source_url: "https://www.data.gouv.fr/fr/datasets/annuaire-des-services-publics-nationaux/"
+    
+    columns:
+      - name: service_id
+        description: "Unique identifier of the service"
+        tests:
+          - unique
+          - not_null
