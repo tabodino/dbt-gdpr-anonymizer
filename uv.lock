@@ -366,6 +366,7 @@ name = "dbt-gdpr-anonymizer"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "dbt-core" },
     { name = "dbt-duckdb" },
     { name = "httpx" },
     { name = "loguru" },
@@ -386,6 +387,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "dbt-core", specifier = ">=1.11.6" },
     { name = "dbt-duckdb", specifier = ">=1.10.1" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "loguru", specifier = ">=0.7.3" },

@@ -5,6 +5,7 @@ description = "RGPD-compliant dbt anonymization pipeline for French public data"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dbt-core>=1.11.6",
     "dbt-duckdb>=1.10.1",
     "httpx>=0.28.1",
     "loguru>=0.7.3",
