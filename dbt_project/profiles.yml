@@ -1,9 +1,9 @@
 # ============================================
-# RGPD Anonymizer - dbt Profiles Configuration
+# GDPR Anonymizer - dbt Profiles Configuration
 # ============================================
 # This file configures the database connections for the project
 
-rgpd_anonymizer:
+gdpr_anonymizer:
   
   # Default target
   target: "{{ env_var('DBT_TARGET', 'dev') }}"
@@ -15,7 +15,7 @@ rgpd_anonymizer:
     # ==========================================
     dev:
       type: duckdb
-      path: "{{ env_var('DUCKDB_PATH', './rgpd_anonymizer.duckdb') }}"
+      path: "{{ env_var('DUCKDB_PATH', './gdpr_anonymizer.duckdb') }}"
       
       # DuckDB extensions to load
       extensions:
@@ -38,7 +38,7 @@ rgpd_anonymizer:
     # ==========================================
     staging:
       type: duckdb
-      path: "{{ env_var('DUCKDB_PATH', './rgpd_anonymizer_staging.duckdb') }}"
+      path: "{{ env_var('DUCKDB_PATH', './gdpr_anonymizer_staging.duckdb') }}"
       
       extensions:
         - httpfs
@@ -57,7 +57,7 @@ rgpd_anonymizer:
     # ==========================================
     prod:
       type: duckdb
-      path: "{{ env_var('DUCKDB_PATH', './rgpd_anonymizer_prod.duckdb') }}"
+      path: "{{ env_var('DUCKDB_PATH', './gdpr_anonymizer_prod.duckdb') }}"
       
       extensions:
         - httpfs

@@ -9,10 +9,10 @@ models:
     description: |
       French national public services — cleaned and typed data.
       
-      **WARNING — SENSITIVE DATA**
+      WARNING — SENSITIVE DATA
       
       This model contains personal data (PII) under GDPR.
-      **Do NOT use for public exports or visualizations.**
+      Do NOT use for public exports or visualizations.
       
       Use `int_services_anonymized` instead for any public-facing usage.
       
@@ -26,6 +26,7 @@ models:
       documentation: "https://www.data.gouv.fr/fr/datasets/annuaire-des-services-publics-nationaux/"
     
     columns:
+
       # ========================================
       # IDENTIFIERS
       # ========================================
@@ -60,11 +61,11 @@ models:
         description: "Organization type (e.g., ministere, autorite-administrative-independante)"
         tests:
           - accepted_values:
-              values: 
-                - 'ministere'
-                - 'autorite-administrative-independante'
-                - 'etablissement-public'
-                - 'service-central'
+              values:
+                - ministere
+                - autorite-administrative-independante
+                - etablissement-public
+                - service-central
         meta:
           pii: false
       
@@ -80,7 +81,7 @@ models:
         description: |
           Contact email address of the service.
           
-          **SENSITIVE DATA — DIRECT PII**
+          SENSITIVE DATA — DIRECT PII
           
           Must be anonymized before any public release.
         
@@ -101,7 +102,7 @@ models:
         description: |
           Contact phone number of the service.
           
-          **SENSITIVE DATA — DIRECT PII**
+          SENSITIVE DATA — DIRECT PII
           
           Must be partially masked before publication.
         
@@ -118,7 +119,7 @@ models:
         description: |
           Full postal address of the service (street number, street name).
           
-          **SENSITIVE DATA — INDIRECT PII**
+          SENSITIVE DATA — INDIRECT PII
           
           Must be aggregated at the city level for publication.
         
@@ -135,7 +136,7 @@ models:
         description: |
           GPS coordinate — Latitude (decimal format).
           
-          **SENSITIVE DATA — INDIRECT PII**
+          SENSITIVE DATA — INDIRECT PII
           
           Must be rounded to 2 decimals (~1km precision).
         
@@ -161,7 +162,7 @@ models:
         description: |
           GPS coordinate — Longitude (decimal format).
           
-          **SENSITIVE DATA — INDIRECT PII**
+          SENSITIVE DATA — INDIRECT PII
           
           Must be rounded to 2 decimals (~1km precision).
         
@@ -255,9 +256,9 @@ seeds:
     description: |
       Raw public services data downloaded from data.gouv.fr.
       
-      **Source**: scripts/download_data.py  
-      **Format**: CSV  
-      **Frequency**: Manual / On-demand
+      Source: scripts/download_data.py  
+      Format: CSV  
+      Frequency: Manual / On-demand
     
     meta:
       owner: "data_engineering"

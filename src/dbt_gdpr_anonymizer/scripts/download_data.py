@@ -199,7 +199,7 @@ def main() -> None:
     load_dotenv()
     setup_logger(settings.logging)
 
-    console.print("\n[bold cyan] RGPD Anonymizer - Data Download[/bold cyan]\n")
+    console.print("\n[bold cyan] GDPR Anonymizer - Data Download[/bold cyan]\n")
 
     try:
         # Step 1: Fetch metadata

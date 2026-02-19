@@ -1,7 +1,7 @@
 [project]
 name = "dbt_gdpr_anonymizer"
 version = "0.1.0"
-description = "RGPD-compliant dbt anonymization pipeline for French public data"
+description = "GDPR-compliant dbt anonymization pipeline for French public data"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

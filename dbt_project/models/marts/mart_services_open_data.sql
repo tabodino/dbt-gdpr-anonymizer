@@ -79,7 +79,7 @@ enriched as (
             when department_code in ('75', '77', '78', '91', '92', '93', '94', '95') then 'Île-de-France'
             when department_code in ('59', '62') then 'Hauts-de-France'
             when department_code in ('69', '01', '42', '63') then 'Auvergne-Rhône-Alpes'
-            when department_code in ('13', '83', '84', '04', '05', '06') then 'Provence-Alpes-Côte d\'Azur'
+            when department_code in ('13', '83', '84', '04', '05', '06') then 'Provence-Alpes-Côte d''Azur'
             when department_code in ('33', '24', '40', '47', '64') then 'Nouvelle-Aquitaine'
             when department_code in ('31', '09', '12', '32', '46', '65', '81', '82') then 'Occitanie'
             else 'Autre région'
@@ -127,8 +127,8 @@ enriched as (
         anonymization_version,
         
         -- Metadata for open data catalogues
-        'RGPD Anonymizer v' || anonymization_version as processing_pipeline,
-        'Conforme RGPD - Art. 4.5 (Pseudonymisation)' as legal_status,
+        'GDPR Anonymizer v' || anonymization_version as processing_pipeline,
+        'Conforme GDPR - Art. 4.5 (Pseudonymisation)' as legal_status,
         'Licence Ouverte / Open Licence' as license
         
     from anonymized

@@ -118,17 +118,6 @@ models:
         contains_pii: false
         public_ready: true
 
-      # Sub-domains by business area
-      geographic:
-        +tags: ['geography', 'maps']
-        +meta:
-          domain: "geographic_analysis"
-    
-      administrative:
-        +tags: ['administration', 'organizations']
-        +meta:
-          domain: "administrative_services"
-
 # ============================================
 # SEEDS Configuration
 # ============================================
@@ -195,12 +184,11 @@ dispatch:
 
 # Hooks
 on-run-start: 
-  - "{{ log('Starting RGPD Anonymizer pipeline v' ~ var('project_version'), info=true) }}" 
+  - "{{ log('Starting GDPR Anonymizer pipeline v' ~ var('project_version'), info=true) }}" 
   - "{{ log('Using salt_key: ' ~ (var('salt_key')[:10] ~ '...'), info=true) }}"
 
 on-run-end: 
-  - "{{ log('Pipeline completed successfully', info=true) }}" 
-  - "{{ log_pii_summary() }}"  # Macro custom to resume PII
+  - "{{ log('Pipeline completed successfully', info=true) }}"
 
 
 # ============================================
@@ -212,7 +200,7 @@ require-dbt-version: [">=1.11.0", "<2.0.0"]
 
 # Query comment
 query-comment:
-  comment: "/* dbt:{{ node.unique_id }} - {{ run_started_at }} */"
+  comment: "-- dbt:{{ node.unique_id }} - {{ run_started_at }}"
   append: true
 
 # Flags
