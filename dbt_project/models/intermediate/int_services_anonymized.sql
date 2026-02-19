@@ -132,6 +132,43 @@ quality_checks as (
     select
         *,
         
+        -- Nouvelle colonne : Organization group 
+        CASE 
+            WHEN organization_type IN ( 
+                'administration-centrale-ou-ministere', 
+                'cabinet-ministeriel', 
+                'service-a-competence-nationale', 
+                'secretaire-d-etat',
+                'service-deconcentre'
+            ) THEN 'services_centraux'
+
+            WHEN organization_type IN ( 
+                'autorite-publique-independante', 
+                'autorite-administrative-independante' 
+            ) THEN 'autorites'  
+            
+            WHEN organization_type IN ( 
+                'etablissement-public', 
+                'groupement-d-interet-public' 
+            ) THEN 'operateurs' 
+            
+            WHEN organization_type = 'etablissement-d-enseignement' 
+            THEN 'enseignement' 
+            
+            WHEN organization_type = 'ambassade-ou-mission-diplomatique' 
+            THEN 'diplomatie' 
+            
+            WHEN organization_type IN ( 
+                'institution-europeenne', 
+                'institution' 
+            ) THEN 'institutions'
+
+            WHEN organization_type = 'conseil-comite-commission-organisme-consultatif' 
+            THEN 'instances_consultatives'
+
+            ELSE 'autres' 
+        END AS organization_category,
+
         -- Post‑anonymization quality checks
         case 
             when contact_email_anon is not null 

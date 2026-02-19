@@ -73,6 +73,12 @@ class AppSettings(BaseSettings):
 
     debug: bool = True
 
+    duckdb_path: str = Field(
+        default="./dbt_project/gdpr_anonymizer.duckdb",
+        alias="DUCKDB_PATH",
+        description="Path to DuckDB database file",
+    )
+
     # Sub-configurations
     datagouv: DataGouvConfig = DataGouvConfig()
     logging: LoggingConfig = LoggingConfig()

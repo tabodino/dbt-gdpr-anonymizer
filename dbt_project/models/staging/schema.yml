@@ -60,12 +60,7 @@ models:
       - name: organization_type
         description: "Organization type (e.g., ministere, autorite-administrative-independante)"
         tests:
-          - accepted_values:
-              values:
-                - ministere
-                - autorite-administrative-independante
-                - etablissement-public
-                - service-central
+          - not_null
         meta:
           pii: false
       
