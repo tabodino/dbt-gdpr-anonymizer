@@ -58,9 +58,9 @@ jobs:
         run: |
           mkdir -p dbt_project/seeds
           cat > dbt_project/seeds/services_publics_raw.csv << EOF
-          service_id,service_name,contact_email,contact_phone,latitude,longitude,commune,postal_code,organization_type
-          TEST001,Service Test 1,test1@example.fr,+33 1 23 45 67 89,48.8566,2.3522,Paris,75001,ministere
-          TEST002,Service Test 2,test2@example.fr,+33 2 98 76 54 32,43.2965,5.3698,Marseille,13001,etablissement-public
+          service_id,service_name,parent_organization,organization_type,contact_email,contact_phone,website,street_address,postal_code,city,commune,latitude,longitude,insee_code,last_updated
+          TEST001,Service Test 1,Ministère A,ministere,test1@example.fr,+33 1 23 45 67 89,https://example.fr,10 rue de Paris,75001,Paris,Paris,48.8566,2.3522,75056,2025-01-01
+          TEST002,Service Test 2,Agence B,etablissement-public,test2@example.fr,+33 2 98 76 54 32,https://example2.fr,20 rue de Marseille,13001,Marseille,Marseille,43.2965,5.3698,13055,2025-01-02
           EOF
 
       - name: Set environment variables
