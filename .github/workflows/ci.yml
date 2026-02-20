@@ -1,0 +1,122 @@
+name: GDPR Anonymizer CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ------------------------------
+  # 1. Lint + Code Quality
+  # ------------------------------
+  lint:
+    name: Lint & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run Ruff
+        run: uv run ruff check .
+
+  # ------------------------------
+  # 2. Tests dbt
+  # ------------------------------
+  dbt-tests:
+    name: dbt Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Create seed test data
+        run: |
+          mkdir -p dbt_project/seeds
+          cat > dbt_project/seeds/services_publics_raw.csv << EOF
+          service_id,service_name,contact_email,contact_phone,latitude,longitude,commune,postal_code,organization_type
+          TEST001,Service Test 1,test1@example.fr,+33 1 23 45 67 89,48.8566,2.3522,Paris,75001,ministere
+          TEST002,Service Test 2,test2@example.fr,+33 2 98 76 54 32,43.2965,5.3698,Marseille,13001,etablissement-public
+          EOF
+
+      - name: Set environment variables
+        run: |
+          echo "DBT_ANONYMIZATION_SALT=${{ secrets.DBT_ANONYMIZATION_SALT }}" >> $GITHUB_ENV
+          echo "DUCKDB_PATH=./dbt_project/test.duckdb" >> $GITHUB_ENV
+
+      - name: Install dbt packages
+        working-directory: dbt_project
+        run: uv run dbt deps
+
+      - name: dbt seed
+        working-directory: dbt_project
+        run: uv run dbt seed
+
+      - name: dbt run
+        working-directory: dbt_project
+        run: uv run dbt run
+
+      - name: dbt test
+        working-directory: dbt_project
+        run: uv run dbt test
+
+      - name: Upload dbt artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-results
+          path: dbt_project/target/
+
+  # ------------------------------
+  # 3. Custom GDPR Checks
+  # ------------------------------
+  gdpr-check:
+    name: GDPR Check
+    runs-on: ubuntu-latest
+    needs: dbt-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for PII in marts
+        run: |
+          echo "Scanning for PII..."
+          if grep -r "@.*\.fr\|@.*\.gouv" dbt_project/models/marts/ --exclude="*.yml"; then
+            echo "PII detected!"
+            exit 1
+          else
+            echo "No PII detected"
+          fi
+
+      - name: Check anonymization macros
+        run: |
+          FILE="dbt_project/models/intermediate/int_services_anonymized.sql"
+          if grep -q "anonymize_" "$FILE"; then
+            echo "Anonymization macros detected"
+          else
+            echo "Missing anonymization macros!"
+            exit 1
+          fi
