@@ -22,6 +22,7 @@ models:
     meta:
       owner: "data_engineering"
       contains_pii: true
+      anonymize: true
       last_reviewed: "2026-02-15"
       documentation: "https://www.data.gouv.fr/fr/datasets/annuaire-des-services-publics-nationaux/"
     
@@ -41,34 +42,7 @@ models:
         tests:
           - unique
           - not_null
-      
-      # ========================================
-      # GENERAL INFORMATION (NON-PII)
-      # ========================================
-      - name: service_name
-        description: "Official name of the public service"
-        tests:
-          - not_null
-        meta:
-          pii: false
-      
-      - name: parent_organization
-        description: "Parent organization (e.g., Ministry, Independent Authority)"
-        meta:
-          pii: false
-      
-      - name: organization_type
-        description: "Organization type (e.g., ministere, autorite-administrative-independante)"
-        tests:
-          - not_null
-        meta:
-          pii: false
-      
-      - name: website
-        description: "Official website of the service"
-        meta:
-          pii: false
-      
+        
       # ========================================
       # PERSONAL DATA (PII)
       # ========================================
@@ -179,29 +153,7 @@ models:
               max_value: 180
               where: "longitude is not null"
       
-      # ========================================
-      # GEOGRAPHICAL METADATA (NON-PII)
-      # ========================================
-      - name: postal_code
-        description: "Postal code"
-        meta:
-          pii: false
-      
-      - name: city
-        description: "City name"
-        meta:
-          pii: false
-      
-      - name: commune
-        description: "Official commune name"
-        meta:
-          pii: false
-      
-      - name: insee_code
-        description: "INSEE code of the commune"
-        meta:
-          pii: false
-      
+
       # ========================================
       # TIMESTAMPS
       # ========================================
@@ -242,6 +194,43 @@ models:
           - accepted_values:
               values: [0, 1]
 
+      - name: anonymized_at
+        meta:
+          generated: true
+          expression: "current_timestamp"
+
+      - name: anonymization_version
+        meta:
+          generated: true
+          expression: "'1.0.0'"
+
+      - name: email_anonymization_method
+        meta:
+          generated: true
+          expression: "'SHA256+salt'"
+
+      - name: phone_anonymization_method
+        meta:
+          generated: true
+          expression: "'partial_masking'"
+
+      - name: gps_anonymization_method
+        meta:
+          generated: true
+          expression: "'round_2_decimals'"
+
+  - name: int_services_anonymized
+    description: "Automatically anonymized dataset using privacy__mask_model"
+    columns:
+      - name: anonymized_at
+        meta:
+          generated: true
+          expression: "current_timestamp"
+      - name: anonymization_version
+        meta:
+          generated: true
+          expression: "'v1.0.0'"
+  
 # ============================================
 # SEEDS (Raw Data)
 # ============================================

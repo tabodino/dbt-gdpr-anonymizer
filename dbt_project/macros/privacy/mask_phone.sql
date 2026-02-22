@@ -18,7 +18,7 @@
     
     Usage:
         select
-            {{ anonymize_phone('contact_phone') }} as contact_phone_anon
+            {{ privacy__mask_phone('contact_phone') }} as contact_phone_anon
         from source
     
     Author: JML
@@ -26,7 +26,7 @@
 #}
 
 
-{% macro anonymize_phone(column_name, keep_chars=6) %}
+{% macro privacy__mask_phone(column_name, keep_chars=6) %}
     
     case 
         when {{ column_name }} is not null and {{ column_name }} != '' then
@@ -75,7 +75,7 @@
             )
         else 
             null
-    end
+    end as {{ column_name }}_anon
 
 {% endmacro %}
 
