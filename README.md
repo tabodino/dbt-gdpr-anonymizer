@@ -1,5 +1,19 @@
 # Dbt GDPR Anonymizer
 
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![dbt](https://img.shields.io/badge/dbt-1.11+-FF694B?style=flat-square&logo=dbt&logoColor=white)](https://www.getdbt.com/)
+[![DuckDB](https://img.shields.io/badge/DuckDB-Latest-FFF000?style=flat-square&logo=duckdb&logoColor=black)](https://duckdb.org/)
+[![uv](https://img.shields.io/badge/uv-Fast_Package_Manager-5D2FE2?style=flat-square&logo=python&logoColor=white)](https://github.com/astral-sh/uv)
+
+[![GDPR Compliant](https://img.shields.io/badge/GDPR-Compliant-003399?style=flat-square&logo=european-union&logoColor=white)](https://gdpr-info.eu/)
+[![Security](https://img.shields.io/badge/Security-Metadata--Driven-success?style=flat-square)](https://github.com/ton-repo)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+
+<img src="docs/screenshots/dbt-gdpr-anonymizer.webp">
+
+---
+
 A professional-grade implementation of programmatic data anonymization using dbt's meta properties and Jinja macros. This project demonstrates how to decouple security logic from transformation logic using real-world French Government data (RNE).
 
 ---
