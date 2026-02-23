@@ -41,19 +41,19 @@ ADDRESS_PATTERN = re.compile(
 
 
 def get_schema(conn: duckdb.DuckDBPyConnection) -> str:
-    """Get the schema name where int_services_anonymized is located."""
+    """Get the schema name where int_services_enriched is located."""
     result = conn.execute(
         """
         SELECT table_schema
         FROM information_schema.tables
-        WHERE table_name = 'int_services_anonymized'
+        WHERE table_name = 'int_services_enriched'
     """
     ).fetchone()
 
     if result:
         return result[0]
     else:
-        logger.error("Table int_services_anonymized not found in any schema")
+        logger.error("Table int_services_enriched not found in any schema")
         sys.exit(1)
 
 
@@ -141,7 +141,7 @@ def check_no_pii_in_marts(conn: duckdb.DuckDBPyConnection) -> List[Tuple[str, st
 
 def check_anonymization_quality(conn: duckdb.DuckDBPyConnection, schema: str) -> dict:
     """
-    Check anonymization quality in int_services_anonymized.
+    Check anonymization quality in int_services_enriched.
 
     Returns:
         Dictionary with quality metrics
@@ -158,7 +158,7 @@ def check_anonymization_quality(conn: duckdb.DuckDBPyConnection, schema: str) ->
             SUM(CASE WHEN contact_email_anon LIKE '%@anonymized.gouv.fr' THEN 1 ELSE 0 END) as properly_anonymized,
             SUM(CASE WHEN contact_email_anon NOT LIKE '%@anonymized.gouv.fr' 
                      AND contact_email_anon IS NOT NULL THEN 1 ELSE 0 END) as improperly_anonymized
-        FROM {schema}.int_services_anonymized
+        FROM dev_anonymized.int_services_anonymized
         WHERE contact_email_anon IS NOT NULL
     """
     ).fetchone()
@@ -178,7 +178,7 @@ def check_anonymization_quality(conn: duckdb.DuckDBPyConnection, schema: str) ->
             SUM(CASE WHEN contact_phone_anon LIKE '%XX XX XX XX' THEN 1 ELSE 0 END) as properly_masked,
             SUM(CASE WHEN contact_phone_anon NOT LIKE '%XX XX XX XX' 
                      AND contact_phone_anon IS NOT NULL THEN 1 ELSE 0 END) as improperly_masked
-        FROM {schema}.int_services_anonymized
+        FROM {schema}.int_services_enriched
         WHERE contact_phone_anon IS NOT NULL
     """
     ).fetchone()
@@ -195,10 +195,10 @@ def check_anonymization_quality(conn: duckdb.DuckDBPyConnection, schema: str) ->
         SELECT
             COUNT(*) AS total_coords,
             SUM(CASE
-                WHEN latitude_anon = ROUND(latitude_anon, 0)
-                AND longitude_anon = ROUND(longitude_anon, 0)
+                WHEN (latitude_anon * 100) = FLOOR(latitude_anon * 100)
+                AND (longitude_anon * 100) = FLOOR(longitude_anon * 100)
                 THEN 1 ELSE 0 END) AS properly_rounded
-        FROM {schema}.int_services_anonymized
+        FROM {schema}.int_services_enriched
         WHERE latitude_anon IS NOT NULL
         AND longitude_anon IS NOT NULL
     """
@@ -232,7 +232,7 @@ def check_k_anonymity(conn: duckdb.DuckDBPyConnection, schema: str, k: int = 5) 
             SELECT 
                 organization_category,
                 COUNT(*) AS group_size
-            FROM {schema}.int_services_anonymized
+            FROM {schema}.int_services_enriched
             GROUP BY organization_category
         )
         SELECT *

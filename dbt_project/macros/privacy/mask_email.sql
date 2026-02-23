@@ -19,7 +19,7 @@
     
     Usage:
         select
-            {{ anonymize_email('contact_email') }} as contact_email_anon
+            {{ privacy__mask_email('contact_email') }} as contact_email_anon
         from source
     
     Author: JML
@@ -27,7 +27,7 @@
 #}
 
 
-{% macro anonymize_email(column_name, output_domain='anonymized.gouv.fr') %}
+{% macro privacy__mask_email(column_name, output_domain='anonymized.gouv.fr') %}
     
     case 
         when {{ column_name }} is not null and {{ column_name }} != '' then
@@ -49,7 +49,7 @@
             )
         else 
             null
-    end
+    end as {{ column_name }}_anon
 
 {% endmacro %}
 

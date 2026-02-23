@@ -30,7 +30,7 @@
 
 with anonymized as (
     
-    select * from {{ ref('int_services_anonymized') }}
+    select * from {{ ref('int_services_enriched') }}
 
 ),
 
@@ -40,21 +40,21 @@ enriched as (
         -- ========================================
         -- IDENTIFIERS
         -- ========================================
-        service_id,
-        service_name,
+        service_id_anon as service_id, 
+        service_name_anon as service_name,
         
         -- ========================================
         -- CLASSIFICATION
         -- ========================================
-        parent_organization,
-        organization_type,
+        parent_organization_anon as parent_organization,
+        organization_type_anon as organization_type,
         
         -- Normalization of organization types for visualization
         case 
-            when organization_type = 'ministere' then 'Ministère'
-            when organization_type = 'autorite-administrative-independante' then 'Autorité Indépendante'
-            when organization_type = 'etablissement-public' then 'Établissement Public'
-            when organization_type = 'service-central' then 'Service Central'
+            when organization_type_anon = 'ministere' then 'Ministère'
+            when organization_type_anon = 'autorite-administrative-independante' then 'Autorité Indépendante'
+            when organization_type_anon = 'etablissement-public' then 'Établissement Public'
+            when organization_type_anon = 'service-central' then 'Service Central'
             else 'Autre'
         end as organization_type_label,
         
@@ -63,16 +63,13 @@ enriched as (
         -- ========================================
         contact_email_anon as contact_email,
         contact_phone_anon as contact_phone,
-        country_code,
-        email_domain,
-        website,
         
         -- ========================================
         -- AGGREGATED LOCATION
         -- ========================================
-        city,
-        commune,
-        department_code,
+        city_anon as city, 
+        commune_anon as commune, 
+        department_code_anon as department_code,
         
         -- Department-to-region mapping (simplified)
         case 
@@ -88,31 +85,31 @@ enriched as (
         -- Anonymized GPS coordinates
         latitude_anon as latitude,
         longitude_anon as longitude,
-        geohash,
+        geohash_anon as geohash,
         
-        insee_code,
-        postal_code,
+        insee_code_anon as insee_code, 
+        postal_code_anon as postal_code,
         
         -- ========================================
         -- FLAGS AND INDICATORS
         -- ========================================
-        has_email,
-        has_phone,
-        has_address,
-        has_coordinates,
+        has_email_anon as has_email, 
+        has_phone_anon as has_phone, 
+        has_address_anon as has_address, 
+        has_coordinates_anon as has_coordinates,
         
         -- Data completeness indicator
-        (cast(has_email as int) + 
-         cast(has_phone as int) + 
-         cast(has_address as int) + 
-         cast(has_coordinates as int)) as data_completeness_score,
+        (cast(has_email_anon as int) + 
+         cast(has_phone_anon as int) + 
+         cast(has_address_anon as int) + 
+         cast(has_coordinates_anon as int)) as data_completeness_score,
         
         case 
-            when (cast(has_email as int) + cast(has_phone as int) + 
-                  cast(has_address as int) + cast(has_coordinates as int)) >= 3 
+            when (cast(has_email_anon as int) + cast(has_phone_anon as int) + 
+                  cast(has_address_anon as int) + cast(has_coordinates_anon as int)) >= 3 
             then 'Complet'
-            when (cast(has_email as int) + cast(has_phone as int) + 
-                  cast(has_address as int) + cast(has_coordinates as int)) = 2 
+            when (cast(has_email_anon as int) + cast(has_phone_anon as int) + 
+                  cast(has_address_anon as int) + cast(has_coordinates_anon as int)) = 2 
             then 'Partiel'
             else 'Minimal'
         end as data_quality_level,
@@ -120,7 +117,7 @@ enriched as (
         -- ========================================
         -- METADATA
         -- ========================================
-        last_updated,
+        last_updated_anon as last_updated,
         anonymized_at,
         current_timestamp as mart_created_at,
         

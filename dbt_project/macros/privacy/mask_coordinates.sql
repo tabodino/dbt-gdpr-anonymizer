@@ -23,7 +23,7 @@
     Usage:
         select
             service_id,
-            {{ anonymize_coordinates('latitude', 'longitude') }}
+            {{ privacy__mask_coordinates('latitude', 'longitude') }}
         from source
     
     Author: JML
@@ -31,10 +31,9 @@
 #}
 
 
-{% macro anonymize_coordinates(lat_column, lon_column, precision=2) %}
+{% macro privacy__mask_coordinates(column_name, precision=2) %}
     
-    round(cast({{ lat_column }} as numeric), {{ precision }}) as {{ lat_column }}_anon,
-    round(cast({{ lon_column }} as numeric), {{ precision }}) as {{ lon_column }}_anon
+    round(cast({{ column_name }} as numeric), {{ precision }}) as {{ column_name }}_anon
 
 {% endmacro %}
 
@@ -150,7 +149,7 @@
 #}
 
 
-{% macro mask_coordinates(lat_column, lon_column) %}
+{% macro privacy__mask_full_coordinates(lat_column, lon_column) %}
     
     null as {{ lat_column }}_masked,
     null as {{ lon_column }}_masked
