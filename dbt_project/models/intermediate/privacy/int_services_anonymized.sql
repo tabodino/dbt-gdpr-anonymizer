@@ -37,4 +37,14 @@
   )
 }}
 
-{{ privacy__mask_model(ref('stg_services_publics')) }}
+
+with masked_data as (
+    {{ privacy__mask_model(ref('stg_services_publics')) }}
+)
+
+select 
+    *,
+    current_timestamp as anonymized_at,
+    '{{ var("project_version") }}' as anonymization_version,
+    'round_{{ var("gps_precision") }}_decimals' as gps_anonymization_method
+from masked_data

@@ -47,7 +47,7 @@ enriched as (
         -- CLASSIFICATION
         -- ========================================
         parent_organization_anon as parent_organization,
-        organization_type_anon,
+        organization_type_anon as organization_type,
         
         -- Normalization of organization types for visualization
         case 
@@ -138,7 +138,7 @@ final as (
     
     -- Quality filters for publication
     where service_name is not null
-      and organization_type_anon is not null
+      and organization_type is not null
       and data_completeness_score >= 1  -- At least one available contact method
 
 )

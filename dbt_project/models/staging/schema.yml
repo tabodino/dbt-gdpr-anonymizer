@@ -194,16 +194,18 @@ models:
           - accepted_values:
               values: [0, 1]
 
+  - name: int_services_anonymized
+    description: "Automatically anonymized dataset using privacy__mask_model"
+    columns:
+      
       - name: anonymized_at
         meta:
           generated: true
           expression: "current_timestamp"
-
       - name: anonymization_version
         meta:
           generated: true
-          expression: "'1.0.0'"
-
+          expression: "'v1.0.0'"
       - name: email_anonymization_method
         meta:
           generated: true
@@ -219,17 +221,7 @@ models:
           generated: true
           expression: "'round_2_decimals'"
 
-  - name: int_services_anonymized
-    description: "Automatically anonymized dataset using privacy__mask_model"
-    columns:
-      - name: anonymized_at
-        meta:
-          generated: true
-          expression: "current_timestamp"
-      - name: anonymization_version
-        meta:
-          generated: true
-          expression: "'v1.0.0'"
+        
   
 # ============================================
 # SEEDS (Raw Data)

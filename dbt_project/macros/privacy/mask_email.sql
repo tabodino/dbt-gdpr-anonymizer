@@ -49,7 +49,7 @@
             )
         else 
             null
-    end
+    end as {{ column_name }}_anon
 
 {% endmacro %}
 
