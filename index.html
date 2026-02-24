@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="dbt GDPR Anonymizer - Meta-Driven Data Privacy Pipeline for French Public Services">
+    <meta name="author" content="Jean-Michel LIEVIN">
+    <title>dbt GDPR Anonymizer | Meta-Driven Data Privacy</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="site-header">
+            <h1><i class="fas fa-shield-alt"></i> dbt – GDPR Anonymizer</h1>
+            <p class="subtitle">Metadata-Driven Data Privacy</p>
+            <div class="meta">
+                <span><i class="fas fa-calendar"></i> Generated on <span id="generation-date"></span></span>
+                <span><i class="fas fa-database"></i> Source: data.gouv.fr</span>
+                <span><i class="fas fa-check-circle"></i> GDPR Compliant</span>
+            </div>
+        </header>
+
+        <!-- Statistics Section -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                Pipeline Statistics
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="number" id="stat-services">6,243</span>
+                    <span class="label">Services Processed</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number" id="stat-columns">5</span>
+                    <span class="label">Anonymized Columns</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number" id="stat-email">100%</span>
+                    <span class="label">Email Anonymization</span>
+                </div>
+                <div class="stat-card">
+                    <span class="number" id="stat-phone">100%</span>
+                    <span class="label">Phone Masking</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Table 1: Staging Layer (Raw Data with PII) -->
+        <section class="section">
+            <div class="table-header">
+                <h2 class="section-title">
+                    <i class="fas fa-database"></i>
+                    Stage 1: Staging Layer
+                </h2>
+                <span class="table-badge badge-pii">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Contains PII
+                </span>
+            </div>
+
+            <div class="table-description">
+                <i class="fas fa-info-circle"></i>
+                <strong>Raw data</strong> from data.gouv.fr containing personal identifiable information (PII).
+                <br>⚠️ <strong>Do NOT use for public exports or visualizations.</strong>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Service ID</th>
+                            <th class="truncate">Service Name</th>
+                            <th class="pii-header">Email (PII)</th>
+                            <th class="pii-header">Phone (PII)</th>
+                            <th class="pii-header">Latitude</th>
+                            <th class="pii-header">Longitude</th>
+                            <th>City</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>172183</td>
+                            <td class="truncate">Haute Autorité pour la transparence...</td>
+                            <td class="pii-cell"><code>secretariat.sg@hatvp.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 72 60 58 70</code></td>
+                            <td class="pii-cell"><code>48.871040</code></td>
+                            <td class="pii-cell"><code>2.339648</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172001</td>
+                            <td class="truncate">Ministère de l'Intérieur et...</td>
+                            <td class="pii-cell"><code>contact@interieur.gouv.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 49 27 49 27</code></td>
+                            <td class="pii-cell"><code>48.870833</code></td>
+                            <td class="pii-cell"><code>2.316667</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>173045</td>
+                            <td class="truncate">Autorité de régulation des...</td>
+                            <td class="pii-cell"><code>contact@arcep.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 40 47 70 00</code></td>
+                            <td class="pii-cell"><code>48.839722</code></td>
+                            <td class="pii-cell"><code>2.389167</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172045</td>
+                            <td class="truncate">Conseil constitutionnel</td>
+                            <td class="pii-cell"><code>accueil@conseil-constitutionnel.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 42 60 84 60</code></td>
+                            <td class="pii-cell"><code>48.858611</code></td>
+                            <td class="pii-cell"><code>2.336667</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172101</td>
+                            <td class="truncate">Défenseur des droits</td>
+                            <td class="pii-cell"><code>contact@defenseurdesdroits.fr</code></td>
+                            <td class="pii-cell"><code>+33 9 69 39 00 00</code></td>
+                            <td class="pii-cell"><code>48.863611</code></td>
+                            <td class="pii-cell"><code>2.371944</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172201</td>
+                            <td class="truncate">Commission nationale de l'informatique...</td>
+                            <td class="pii-cell"><code>contact@cnil.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 53 73 22 22</code></td>
+                            <td class="pii-cell"><code>48.867222</code></td>
+                            <td class="pii-cell"><code>2.326944</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>173001</td>
+                            <td class="truncate">Autorité des marchés financiers</td>
+                            <td class="pii-cell"><code>contact@amf-france.org</code></td>
+                            <td class="pii-cell"><code>+33 1 53 45 60 00</code></td>
+                            <td class="pii-cell"><code>48.870278</code></td>
+                            <td class="pii-cell"><code>2.330278</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172301</td>
+                            <td class="truncate">Conseil d'État</td>
+                            <td class="pii-cell"><code>contact@conseil-etat.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 40 20 80 00</code></td>
+                            <td class="pii-cell"><code>48.861389</code></td>
+                            <td class="pii-cell"><code>2.326389</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172401</td>
+                            <td class="truncate">Cour de cassation</td>
+                            <td class="pii-cell"><code>accueil@courdecassation.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 44 32 50 50</code></td>
+                            <td class="pii-cell"><code>48.856389</code></td>
+                            <td class="pii-cell"><code>2.345833</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172501</td>
+                            <td class="truncate">Cour des comptes</td>
+                            <td class="pii-cell"><code>contact@ccomptes.fr</code></td>
+                            <td class="pii-cell"><code>+33 1 42 98 95 00</code></td>
+                            <td class="pii-cell"><code>48.858056</code></td>
+                            <td class="pii-cell"><code>2.359722</code></td>
+                            <td>Paris</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Table 2: Intermediate Layer (Anonymized Data) -->
+        <section class="section">
+            <div class="table-header">
+                <h2 class="section-title">
+                    <i class="fas fa-lock"></i>
+                    Stage 2: Intermediate Layer
+                </h2>
+                <span class="table-badge badge-safe">
+                    <i class="fas fa-check-circle"></i>
+                    PII Safe
+                </span>
+            </div>
+
+            <div class="table-description">
+                <i class="fas fa-shield-alt"></i>
+                <strong>Anonymized data</strong> after meta-driven transformation via
+                <code>privacy__mask_model()</code>.
+                <br>✅ <strong>Safe for analytics and reporting.</strong>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Service ID</th>
+                            <th class="truncate">Service Name</th>
+                            <th class="safe-header">Email (Hashed)</th>
+                            <th class="safe-header">Phone (Masked)</th>
+                            <th class="safe-header">Latitude</th>
+                            <th class="safe-header">Longitude</th>
+                            <th>City</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>172183</td>
+                            <td class="truncate">Haute Autorité pour la transparence...</td>
+                            <td class="safe-cell"><code>user_a3f7b2c1d4e5@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.87</code></td>
+                            <td class="safe-cell"><code>2.34</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172001</td>
+                            <td class="truncate">Ministère de l'Intérieur et...</td>
+                            <td class="safe-cell"><code>user_d4e5f6g7h8i9@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.87</code></td>
+                            <td class="safe-cell"><code>2.32</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>173045</td>
+                            <td class="truncate">Autorité de régulation des...</td>
+                            <td class="safe-cell"><code>user_j0k1l2m3n4o5@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.84</code></td>
+                            <td class="safe-cell"><code>2.39</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172045</td>
+                            <td class="truncate">Conseil constitutionnel</td>
+                            <td class="safe-cell"><code>user_p6q7r8s9t0u1@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.86</code></td>
+                            <td class="safe-cell"><code>2.34</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172101</td>
+                            <td class="truncate">Défenseur des droits</td>
+                            <td class="safe-cell"><code>user_v2w3x4y5z6a7@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 9 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.86</code></td>
+                            <td class="safe-cell"><code>2.37</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172201</td>
+                            <td class="truncate">Commission nationale de l'informatique...</td>
+                            <td class="safe-cell"><code>user_b8c9d0e1f2g3@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.87</code></td>
+                            <td class="safe-cell"><code>2.33</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>173001</td>
+                            <td class="truncate">Autorité des marchés financiers</td>
+                            <td class="safe-cell"><code>user_h4i5j6k7l8m9@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.87</code></td>
+                            <td class="safe-cell"><code>2.33</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172301</td>
+                            <td class="truncate">Conseil d'État</td>
+                            <td class="safe-cell"><code>user_n0o1p2q3r4s5@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.86</code></td>
+                            <td class="safe-cell"><code>2.33</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172401</td>
+                            <td class="truncate">Cour de cassation</td>
+                            <td class="safe-cell"><code>user_t6u7v8w9x0y1@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.86</code></td>
+                            <td class="safe-cell"><code>2.35</code></td>
+                            <td>Paris</td>
+                        </tr>
+                        <tr>
+                            <td>172501</td>
+                            <td class="truncate">Cour des comptes</td>
+                            <td class="safe-cell"><code>user_z2a3b4c5d6e7@anonymized.gouv.fr</code></td>
+                            <td class="safe-cell"><code>+33 1 XX XX XX XX</code></td>
+                            <td class="safe-cell"><code>48.86</code></td>
+                            <td class="safe-cell"><code>2.36</code></td>
+                            <td>Paris</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Anonymization Techniques -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="fas fa-cogs"></i>
+                Anonymization Techniques Applied
+            </h2>
+
+            <div class="techniques-grid">
+                <!-- Email Hashing -->
+                <div class="technique-card">
+                    <div class="technique-card-header">
+                        <div class="technique-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h5>Email Hashing</h5>
+                    </div>
+                    <p class="technique-method"><strong>Method:</strong> SHA-256 + Salt</p>
+                    <div class="technique-example">
+                        <div class="label">Example:</div>
+                        <span class="example-before">secretariat.sg@hatvp.fr</span>
+                        <div class="example-arrow">↓</div>
+                        <span class="example-after">user_a3f7b2c1d4e5@anonymized.gouv.fr</span>
+                    </div>
+                </div>
+
+                <!-- Phone Masking -->
+                <div class="technique-card">
+                    <div class="technique-card-header">
+                        <div class="technique-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h5>Phone Masking</h5>
+                    </div>
+                    <p class="technique-method"><strong>Method:</strong> Partial Masking</p>
+                    <div class="technique-example">
+                        <div class="label">Example:</div>
+                        <span class="example-before">+33 1 72 60 58 70</span>
+                        <div class="example-arrow">↓</div>
+                        <span class="example-after">+33 1 XX XX XX XX</span>
+                    </div>
+                </div>
+
+                <!-- GPS Rounding -->
+                <div class="technique-card">
+                    <div class="technique-card-header">
+                        <div class="technique-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h5>GPS Rounding</h5>
+                    </div>
+                    <p class="technique-method"><strong>Method:</strong> 2 Decimals (~1km)</p>
+                    <div class="technique-example">
+                        <div class="label">Example:</div>
+                        <span class="example-before">48.871040, 2.339648</span>
+                        <div class="example-arrow">↓</div>
+                        <span class="example-after">48.87, 2.34</span>
+                    </div>
+                </div>
+
+                <!-- K-Anonymity -->
+                <div class="technique-card">
+                    <div class="technique-card-header">
+                        <div class="technique-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h5>K-Anonymity</h5>
+                    </div>
+                    <p class="technique-method"><strong>Method:</strong> Organizational Grouping</p>
+                    <div class="technique-example">
+                        <div class="label">Threshold: k ≥ 5</div>
+                        <p style="margin: 0.75rem 0; font-size: 0.9rem; color: var(--color-text);">
+                            Groups: <code>services_centraux</code>, <code>autorites</code>, <code>operateurs</code>,
+                            etc.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meta-Driven Approach -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="fas fa-code"></i>
+                Meta-Driven Approach
+            </h2>
+
+            <div class="info-box">
+                <div class="info-box-header">
+                    <div class="info-box-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h5>How It Works</h5>
+                </div>
+
+                <p>
+                    Instead of hardcoding anonymization logic in SQL, we use dbt's <code>meta</code> properties
+                    in <code>schema.yml</code> to declaratively define which columns need anonymization.
+                </p>
+
+                <div class="code-block">
+                    <pre><code>columns:
+    - name: contact_email
+    meta:
+        pii: true
+        pii_type: "direct_identifier"
+        anonymization_method: "hash_sha256"
+        retention_days: 730
+        data_owner: "DPO"
+        legal_basis: "GDPR Art. 6.1.e"
+                </code></pre>
+                </div>
+                <p>
+                    The <code>privacy__mask_model()</code> macro reads these metadata and automatically applies
+                    the correct transformation. This ensures:
+                </p>
+
+                <ul class="benefits-list">
+                    <li><strong>Single Source of Truth:</strong> All privacy rules defined in one place (YAML)</li>
+                    <li><strong>Auditability:</strong> DPO can review YAML instead of scattered SQL logic</li>
+                    <li><strong>Maintainability:</strong> Change algorithm once, apply everywhere automatically</li>
+                    <li><strong>Documentation:</strong> Self-documenting via dbt docs generation</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-links">
+                <a href="https://github.com/tabodino/dbt-gdpr-anonymizer" target="_blank" class="footer-link">
+                    <i class="fab fa-github"></i>
+                    View on GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/jean-michel-lievin" target="_blank" class="footer-link">
+                    <i class="fab fa-linkedin"></i>
+                    LinkedIn Profile
+                </a>
+                <a href="https://www.data.gouv.fr/api/1/datasets/annuaire-des-services-publics-nationaux/"
+                    target="_blank" class="footer-link">
+                    <i class="fas fa-database"></i>
+                    Data Source
+                </a>
+            </div>
+            <div class="footer-credits">
+                <p>© 2026 Jean-Michel LIEVIN | MIT License</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Set generation date
+        document.addEventListener('DOMContentLoaded', function () {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('generation-date').textContent = dateStr;
+        });
+    </script>
+</body>
+
+</html>
