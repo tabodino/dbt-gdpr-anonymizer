@@ -114,7 +114,7 @@ jobs:
       - name: Check anonymization macros
         run: |
           FILE="dbt_project/models/intermediate/privacy/int_services_anonymized.sql"
-          if grep -q "anonymize_" "$FILE"; then
+          if grep -q "privacy__mask_model" "$FILE"; then
             echo "Anonymization macros detected"
           else
             echo "Missing anonymization macros!"
