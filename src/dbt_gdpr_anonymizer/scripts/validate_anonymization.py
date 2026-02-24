@@ -158,7 +158,7 @@ def check_anonymization_quality(conn: duckdb.DuckDBPyConnection, schema: str) ->
             SUM(CASE WHEN contact_email_anon LIKE '%@anonymized.gouv.fr' THEN 1 ELSE 0 END) as properly_anonymized,
             SUM(CASE WHEN contact_email_anon NOT LIKE '%@anonymized.gouv.fr' 
                      AND contact_email_anon IS NOT NULL THEN 1 ELSE 0 END) as improperly_anonymized
-        FROM dev_anonymized.int_services_anonymized
+        FROM {schema}.int_services_enriched
         WHERE contact_email_anon IS NOT NULL
     """
     ).fetchone()

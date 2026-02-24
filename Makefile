@@ -167,10 +167,10 @@ clean-all: clean ## Full cleanup including data
 
 format: ## Format Python code using ruff
 	@echo "$(BLUE) Formatting code...$(NC)"
-	uv run ruff format scripts/
+	uv run ruff format src/dbt_gdpr_anonymizer/scripts/
 	@echo "$(GREEN) Code formatted$(NC)"
 
 lint: ## Lint Python code using ruff
 	@echo "$(BLUE) Running linter...$(NC)"
-	uv run ruff check scripts/
+	uv run ruff check src/dbt_gdpr_anonymizer/scripts/
 	@echo "$(GREEN) Linting completed$(NC)"
